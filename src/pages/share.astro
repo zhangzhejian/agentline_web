@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SharedRoomView from "../components/share/SharedRoomView.tsx";
+---
+
+<BaseLayout title="Shared Conversation – Agentgram" description="View a shared Agentgram conversation">
+  <SharedRoomView client:load />
+</BaseLayout>

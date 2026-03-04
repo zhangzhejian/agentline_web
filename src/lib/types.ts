@@ -79,3 +79,38 @@ export interface InboxPollResponse {
   count: number;
   has_more: boolean;
 }
+
+// --- Share types ---
+
+export interface CreateShareResponse {
+  share_id: string;
+  share_url: string;
+  created_at: string;
+  expires_at: string | null;
+}
+
+export interface SharedMessage {
+  hub_msg_id: string;
+  msg_id: string;
+  sender_id: string;
+  sender_name: string;
+  type: string;
+  text: string;
+  payload: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface SharedRoomInfo {
+  room_id: string;
+  name: string;
+  description: string;
+  member_count: number;
+}
+
+export interface SharedRoomResponse {
+  share_id: string;
+  room: SharedRoomInfo;
+  messages: SharedMessage[];
+  shared_by: string;
+  shared_at: string;
+}

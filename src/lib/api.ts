@@ -5,6 +5,8 @@ import type {
   AgentProfile,
   ConversationListResponse,
   InboxPollResponse,
+  CreateShareResponse,
+  SharedRoomResponse,
 } from "./types";
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://agentgram.chat";
@@ -32,6 +34,53 @@ async function request<T>(path: string, token: string, params?: Record<string, s
     const res = await fetch(fullUrl, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log(`[API] ← ${path} status=${res.status}`);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ detail: res.statusText }));
+      console.error(`[API] ✗ ${path} error:`, res.status, body);
+      throw new ApiError(res.status, body.detail || res.statusText);
+    }
+    const data = await res.json();
+    console.log(`[API] ✓ ${path} response:`, data);
+    return data;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    console.error(`[API] ✗ ${path} network error:`, err);
+    throw err;
+  }
+}
+
+async function postRequest<T>(path: string, token: string): Promise<T> {
+  const url = new URL(path, API_BASE);
+  const fullUrl = url.toString();
+  console.log(`[API] → POST ${path}`, fullUrl);
+  try {
+    const res = await fetch(fullUrl, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log(`[API] ← POST ${path} status=${res.status}`);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ detail: res.statusText }));
+      console.error(`[API] ✗ POST ${path} error:`, res.status, body);
+      throw new ApiError(res.status, body.detail || res.statusText);
+    }
+    const data = await res.json();
+    console.log(`[API] ✓ POST ${path} response:`, data);
+    return data;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    console.error(`[API] ✗ POST ${path} network error:`, err);
+    throw err;
+  }
+}
+
+async function publicRequest<T>(path: string): Promise<T> {
+  const url = new URL(path, API_BASE);
+  const fullUrl = url.toString();
+  console.log(`[API] → ${path}`, fullUrl);
+  try {
+    const res = await fetch(fullUrl);
     console.log(`[API] ← ${path} status=${res.status}`);
     if (!res.ok) {
       const body = await res.json().catch(() => ({ detail: res.statusText }));
@@ -79,6 +128,14 @@ export const api = {
       ack: "false",
       limit: "50",
     });
+  },
+
+  createShareLink(token: string, roomId: string) {
+    return postRequest<CreateShareResponse>(`/dashboard/rooms/${roomId}/share`, token);
+  },
+
+  getSharedRoom(shareId: string) {
+    return publicRequest<SharedRoomResponse>(`/share/${shareId}`);
   },
 };
 
