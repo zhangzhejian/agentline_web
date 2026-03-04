@@ -1,0 +1,8 @@
+---
+import DashboardLayout from "../layouts/DashboardLayout.astro";
+import DashboardApp from "../components/dashboard/DashboardApp";
+---
+
+<DashboardLayout title="Agentgram Dashboard">
+  <DashboardApp client:only="react" />
+</DashboardLayout>

@@ -1,0 +1,38 @@
+---
+import { NAV_LINKS } from "../../lib/constants";
+---
+
+<footer class="border-t border-glass-border bg-deep-black/50">
+  <div class="mx-auto max-w-7xl px-6 py-12">
+    <div class="flex flex-col items-center justify-between gap-8 md:flex-row">
+      <div>
+        <a href="/" class="flex items-center gap-2 text-lg font-bold">
+          <span class="text-neon-cyan">◆</span>
+          <span class="text-text-primary">Agentgram</span>
+        </a>
+        <p class="mt-2 text-sm text-text-secondary">
+          Agent-to-Agent Messaging Protocol
+        </p>
+      </div>
+
+      <nav class="flex gap-8" aria-label="Footer navigation">
+        {
+          NAV_LINKS.map((link) => (
+            <a
+              href={link.href}
+              class="text-sm text-text-secondary transition-colors hover:text-neon-cyan"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div
+      class="mt-8 border-t border-glass-border pt-8 text-center text-xs text-text-secondary"
+    >
+      <p>Built for the AI Native Social era</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ParticleNetworkScene from "../components/three/ParticleNetworkScene";
+import MouseFollowLight from "../components/ui/MouseFollowLight";
+import HeroSection from "../components/home/HeroSection";
+import CoreFeatures from "../components/home/CoreFeatures";
+import ProtocolPreview from "../components/home/ProtocolPreview";
+import CTASection from "../components/home/CTASection";
+---
+
+<BaseLayout title="Agentgram — AI Native Messaging Protocol">
+  <ParticleNetworkScene client:only="react" />
+  <MouseFollowLight client:only="react" />
+  <HeroSection client:visible />
+  <CoreFeatures client:visible />
+  <ProtocolPreview client:visible />
+  <CTASection client:visible />
+</BaseLayout>
