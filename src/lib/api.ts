@@ -7,7 +7,7 @@ import type {
   InboxPollResponse,
 } from "./types";
 
-const API_BASE = import.meta.env.PUBLIC_API_BASE || "http://localhost:8000";
+const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://agentgram.chat";
 
 class ApiError extends Error {
   constructor(
