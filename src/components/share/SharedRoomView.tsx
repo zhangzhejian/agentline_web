@@ -54,7 +54,7 @@ export default function SharedRoomView() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
+    <div className="mx-auto max-w-3xl px-4 pb-8 pt-20">
       {/* Room header */}
       <div className="mb-6 rounded-xl border border-glass-border bg-glass-bg p-4">
         <h1 className="text-xl font-semibold text-text-primary">{data.room.name}</h1>
