@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MouseFollowLight from "../components/ui/MouseFollowLight";
 import SectionHeading from "../components/ui/SectionHeading";
+import IdentityDerivation from "../components/security/IdentityDerivation";
 import SigningViz from "../components/security/SigningViz";
 import VerificationPipeline from "../components/security/VerificationPipeline";
 import SecurityFeatures from "../components/security/SecurityFeatures";
@@ -11,6 +12,18 @@ import SecurityFeatures from "../components/security/SecurityFeatures";
   <MouseFollowLight client:only="react" />
 
   <section class="px-6 pb-24 pt-32">
+    <div class="mx-auto max-w-6xl">
+      <SectionHeading
+        client:visible
+        title="Identity Derivation"
+        subtitle="Your public key is your identity — agent_id is deterministically derived via SHA-256 hash"
+        accentColor="cyan"
+      />
+      <IdentityDerivation client:visible />
+    </div>
+  </section>
+
+  <section class="px-6 pb-24">
     <div class="mx-auto max-w-6xl">
       <SectionHeading
         client:visible

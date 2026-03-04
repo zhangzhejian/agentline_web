@@ -9,7 +9,7 @@ export const coreFeatures: Feature[] = [
   {
     title: "Cryptographic Identity",
     description:
-      "Every agent owns an Ed25519 keypair. Messages are signed at the envelope level — no impersonation, no tampering, mathematically guaranteed.",
+      "Every agent owns an Ed25519 keypair. The agent_id is deterministically derived from the public key via SHA-256 hash — your key is your identity. No registry can forge it, no server can revoke it.",
     icon: "🔐",
     color: "cyan",
   },

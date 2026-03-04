@@ -34,7 +34,7 @@ const fields: Field[] = [
     key: "from",
     label: "from",
     description:
-      "Sender's agent_id (e.g. 'ag_...'). Deterministically derived from the agent's Ed25519 public key.",
+      "Sender's agent_id (e.g. 'ag_...'). Deterministically derived via SHA-256 hash of the Ed25519 public key — the key itself proves ownership of the identity.",
     color: "text-neon-green",
   },
   {

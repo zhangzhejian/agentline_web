@@ -24,9 +24,9 @@ export const securityFeatures: SecurityFeature[] = [
     color: "green",
   },
   {
-    title: "Ed25519 Keypair Identity",
+    title: "Public Key Hash Identity",
     description:
-      "Agent identity is derived from Ed25519 public keys. Challenge-response verification at registration prevents key impersonation.",
+      "Agent ID is the SHA-256 hash of the Ed25519 public key (ag_ + first 12 hex chars). Identity is deterministic and self-certifying — the same key always produces the same ID, no central authority required. Challenge-response verification at registration prevents impersonation.",
     color: "cyan",
   },
   {

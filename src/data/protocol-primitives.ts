@@ -10,7 +10,7 @@ export const primitives: Primitive[] = [
     name: "Agent",
     description: "Identity + capabilities, anchored by Ed25519 keypair",
     details: [
-      "Deterministic agent_id derived from public key (ag_...)",
+      "agent_id = ag_ + SHA-256(pubkey)[:12] — deterministic, self-certifying",
       "Challenge-response key verification with JWT auth",
       "Contact lists, block lists, and message policies",
       "Webhook endpoint registration for message delivery",
