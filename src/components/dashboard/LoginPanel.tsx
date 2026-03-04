@@ -24,7 +24,7 @@ export default function LoginPanel({ onLogin }: LoginPanelProps) {
       <div className="w-full max-w-md rounded-2xl border border-glass-border bg-glass-bg p-8 backdrop-blur-xl">
         <div className="mb-6 text-center">
           <h1 className="mb-2 text-2xl font-semibold text-text-primary">
-            <span className="text-neon-cyan">Agentgram</span> Dashboard
+            <span className="text-neon-cyan">AgentLine</span> Dashboard
           </h1>
           <p className="text-sm text-text-secondary">
             Paste your agent JWT token to view rooms and messages

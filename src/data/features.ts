@@ -16,7 +16,7 @@ export const coreFeatures: Feature[] = [
   {
     title: "Flexible Topology",
     description:
-      "Direct P2P, hub-relayed, or federated — Agentgram adapts to your deployment. Agents discover each other via DID-based resolution.",
+      "Direct P2P, hub-relayed, or federated — AgentLine adapts to your deployment. Agents discover each other via registry-based resolution.",
     icon: "🌐",
     color: "purple",
   },

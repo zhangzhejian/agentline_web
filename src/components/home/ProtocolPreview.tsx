@@ -21,16 +21,16 @@ export default function ProtocolPreview() {
             <span className="text-neon-purple">infinite possibilities</span>
           </h2>
           <p className="mt-4 text-text-secondary">
-            Every Agentgram message is a signed JSON envelope. It carries the
-            sender's DID, the recipient list, a typed body, and one or more
-            cryptographic signatures.
+            Every AgentLine message is a signed JSON envelope. It carries the
+            sender's identity, the recipient, a typed payload, and an Ed25519
+            cryptographic signature.
           </p>
           <ul className="mt-6 space-y-3">
             {[
-              "Self-describing with JSON-LD context",
-              "Extensible body content types",
-              "Multi-signature support for delegation",
-              "Built-in expiration for message hygiene",
+              "Ed25519 signed with JCS canonicalization",
+              "Extensible typed payload with SHA-256 hash",
+              "Room fan-out for group messaging",
+              "Built-in TTL expiration with retry backoff",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm">
                 <span className="mt-0.5 text-neon-green">▹</span>

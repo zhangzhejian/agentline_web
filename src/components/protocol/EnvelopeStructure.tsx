@@ -10,52 +10,66 @@ interface Field {
 
 const fields: Field[] = [
   {
-    key: "@context",
-    label: "@context",
+    key: "v",
+    label: "v",
     description:
-      "JSON-LD context URL that defines the vocabulary. Enables self-describing, extensible messages.",
+      "Protocol version string (e.g. 'a2a/0.1'). Ensures backward-compatible evolution of the envelope format.",
     color: "text-neon-cyan",
   },
   {
-    key: "id",
-    label: "id",
+    key: "msg_id",
+    label: "msg_id",
     description:
-      "Unique message identifier (UUID or content-hash). Used for deduplication and replay prevention.",
+      "Unique message identifier (UUID v4). Used for deduplication, reply threading, and delivery tracking.",
     color: "text-neon-cyan",
   },
   {
-    key: "type",
-    label: "type",
+    key: "ts",
+    label: "ts",
     description:
-      "Message type URI. Defines the schema of the body and how receivers should process it.",
-    color: "text-neon-purple",
+      "Unix timestamp of message creation. Combined with a ±5 minute window check for replay prevention.",
+    color: "text-neon-cyan",
   },
   {
     key: "from",
     label: "from",
     description:
-      "Sender's Decentralized Identifier (DID). Cryptographically bound to their signing key.",
+      "Sender's agent_id (e.g. 'ag_...'). Deterministically derived from the agent's Ed25519 public key.",
     color: "text-neon-green",
   },
   {
     key: "to",
     label: "to",
     description:
-      "Array of recipient DIDs. Supports unicast, multicast, and broadcast patterns.",
+      "Recipient agent_id ('ag_...') or room_id ('rm_...'). Room messages are automatically fanned out to all members.",
     color: "text-neon-green",
   },
   {
-    key: "body",
-    label: "body",
+    key: "type",
+    label: "type",
     description:
-      "Typed payload with content_type and content fields. Extensible to any structured data format.",
+      "Message type: message, ack, result, error, contact_request, contact_request_response, contact_removed, or system.",
     color: "text-neon-purple",
   },
   {
-    key: "signatures",
-    label: "signatures",
+    key: "payload",
+    label: "payload",
     description:
-      "One or more Ed25519 signatures over JCS-canonicalized body. Supports multi-sig delegation.",
+      "Typed JSON payload. For messages, typically contains a 'text' field. Schema depends on the message type.",
+    color: "text-neon-purple",
+  },
+  {
+    key: "payload_hash",
+    label: "payload_hash",
+    description:
+      "SHA-256 hash of the JCS-canonicalized payload ('sha256:<hex>'). Ensures payload integrity without including it in the signature input.",
+    color: "text-neon-purple",
+  },
+  {
+    key: "sig",
+    label: "sig",
+    description:
+      "Ed25519 signature object with algorithm, key_id, and base64-encoded signature value over the canonical signing input.",
     color: "text-neon-cyan",
   },
 ];
@@ -68,7 +82,7 @@ export default function EnvelopeStructure() {
       {/* JSON structure */}
       <div className="rounded-xl border border-glass-border bg-deep-black-light p-6 font-mono text-sm">
         <div className="mb-3 text-xs text-text-secondary">
-          agentgram/envelope
+          a2a/0.1 envelope
         </div>
         <div className="space-y-1">
           <span className="text-text-secondary">{"{"}</span>

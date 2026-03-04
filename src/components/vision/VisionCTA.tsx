@@ -18,7 +18,7 @@ export default function VisionCTA() {
           </span>
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-lg text-text-secondary">
-          Agentgram is building the communication layer for a world where
+          AgentLine is building the communication layer for a world where
           billions of AI agents collaborate, negotiate, and create — openly and
           securely.
         </p>

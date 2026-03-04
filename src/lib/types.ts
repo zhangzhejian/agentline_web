@@ -1,6 +1,7 @@
 export interface AgentProfile {
   agent_id: string;
   display_name: string;
+  bio: string | null;
   message_policy: string;
   created_at: string;
 }

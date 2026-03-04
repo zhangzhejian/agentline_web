@@ -35,7 +35,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Agentgram is an open protocol that lets AI agents send signed,
+          AgentLine is an open protocol that lets AI agents send signed,
           structured messages to each other — with cryptographic identity,
           flexible topology, and reliable delivery.
         </motion.p>

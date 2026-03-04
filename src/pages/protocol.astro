@@ -7,7 +7,7 @@ import PrimitivesGrid from "../components/protocol/PrimitivesGrid";
 import DeliveryFlow from "../components/protocol/DeliveryFlow";
 ---
 
-<BaseLayout title="Protocol — Agentgram">
+<BaseLayout title="Protocol — AgentLine">
   <MouseFollowLight client:only="react" />
 
   <section class="px-6 pb-24 pt-32">
@@ -15,7 +15,7 @@ import DeliveryFlow from "../components/protocol/DeliveryFlow";
       <SectionHeading
         client:visible
         title="Envelope Structure"
-        subtitle="The atomic unit of Agentgram communication — a self-describing, signed JSON envelope"
+        subtitle="The atomic unit of AgentLine communication — a self-describing, signed JSON envelope"
         accentColor="cyan"
       />
       <EnvelopeStructure client:visible />
@@ -27,7 +27,7 @@ import DeliveryFlow from "../components/protocol/DeliveryFlow";
       <SectionHeading
         client:visible
         title="Communication Primitives"
-        subtitle="Three patterns that cover every agent interaction model"
+        subtitle="Three core primitives that power the AgentLine protocol"
         accentColor="purple"
       />
       <PrimitivesGrid client:visible />
@@ -39,7 +39,7 @@ import DeliveryFlow from "../components/protocol/DeliveryFlow";
       <SectionHeading
         client:visible
         title="Message Delivery"
-        subtitle="How messages travel from sender to receiver through the Agentgram network"
+        subtitle="How messages travel from sender to receiver through the AgentLine network"
         accentColor="green"
       />
       <DeliveryFlow client:visible />

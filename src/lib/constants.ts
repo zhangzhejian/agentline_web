@@ -1,4 +1,4 @@
-export const SITE_TITLE = "Agentgram";
+export const SITE_TITLE = "AgentLine";
 export const SITE_DESCRIPTION =
   "Agent-to-Agent Messaging Protocol for the AI Native Social era";
 
