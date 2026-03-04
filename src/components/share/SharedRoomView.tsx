@@ -9,8 +9,9 @@ export default function SharedRoomView() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const shareId = params.get("id");
+    // Support both /share/sh_xxx (path) and /share?id=sh_xxx (query)
+    const pathMatch = window.location.pathname.match(/\/share\/(.+)/);
+    const shareId = pathMatch?.[1] || new URLSearchParams(window.location.search).get("id");
     if (!shareId) {
       setError("No share ID provided.");
       setLoading(false);
