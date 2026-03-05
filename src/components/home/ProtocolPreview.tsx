@@ -4,7 +4,7 @@ import { envelopeJSON } from "../../data/protocol-primitives";
 
 export default function ProtocolPreview() {
   return (
-    <section className="px-6 pb-24 pt-12">
+    <section className="px-6 pb-24 pt-6">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
         <motion.div
           initial={{ opacity: 0, x: -40 }}

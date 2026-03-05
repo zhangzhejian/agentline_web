@@ -263,7 +263,7 @@ export default function ConversationDemo() {
   );
 
   return (
-    <section ref={containerRef} className="px-6 pb-12 pt-24">
+    <section ref={containerRef} className="px-6 pb-6 pt-24">
       <div className="mx-auto max-w-3xl">
         <SectionHeading
           title="SEE IT IN ACTION"
