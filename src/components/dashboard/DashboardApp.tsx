@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useCallback } from "react";
-import type { DashboardOverview, DashboardMessage, AgentProfile, DashboardRoom } from "../../lib/types";
+import type { DashboardOverview, DashboardMessage, AgentProfile, DashboardRoom, DiscoverRoom } from "../../lib/types";
 import { api } from "../../lib/api";
 import LoginPanel from "./LoginPanel";
 import Sidebar from "./Sidebar";
@@ -21,7 +21,10 @@ interface DashboardState {
   selectedAgentProfile: AgentProfile | null;
   selectedAgentConversations: DashboardRoom[] | null;
   searchResults: AgentProfile[] | null;
-  sidebarTab: "rooms" | "contacts";
+  sidebarTab: "rooms" | "contacts" | "discover";
+  discoverRooms: DiscoverRoom[];
+  discoverLoading: boolean;
+  joiningRoomId: string | null;
 }
 
 type Action =
@@ -36,7 +39,10 @@ type Action =
   | { type: "TOGGLE_RIGHT_PANEL" }
   | { type: "SET_SELECTED_AGENT"; agentId: string | null; profile?: AgentProfile | null; conversations?: DashboardRoom[] | null }
   | { type: "SET_SEARCH_RESULTS"; results: AgentProfile[] | null }
-  | { type: "SET_SIDEBAR_TAB"; tab: "rooms" | "contacts" }
+  | { type: "SET_SIDEBAR_TAB"; tab: "rooms" | "contacts" | "discover" }
+  | { type: "SET_DISCOVER_ROOMS"; rooms: DiscoverRoom[] }
+  | { type: "SET_DISCOVER_LOADING"; loading: boolean }
+  | { type: "SET_JOINING_ROOM"; roomId: string | null }
   | { type: "LOGOUT" }
   | { type: "REFRESH" };
 
@@ -89,6 +95,12 @@ function reducer(state: DashboardState, action: Action): DashboardState {
       return { ...state, searchResults: action.results };
     case "SET_SIDEBAR_TAB":
       return { ...state, sidebarTab: action.tab };
+    case "SET_DISCOVER_ROOMS":
+      return { ...state, discoverRooms: action.rooms, discoverLoading: false };
+    case "SET_DISCOVER_LOADING":
+      return { ...state, discoverLoading: action.loading };
+    case "SET_JOINING_ROOM":
+      return { ...state, joiningRoomId: action.roomId };
     case "REFRESH":
       return { ...state, loading: true };
     case "LOGOUT":
@@ -113,6 +125,9 @@ const initialState: DashboardState = {
   selectedAgentConversations: null,
   searchResults: null,
   sidebarTab: "rooms",
+  discoverRooms: [],
+  discoverLoading: false,
+  joiningRoomId: null,
 };
 
 // --- Context ---
@@ -125,6 +140,8 @@ interface DashboardContextValue {
   selectAgent: (agentId: string) => Promise<void>;
   searchAgents: (q: string) => Promise<void>;
   refreshOverview: () => Promise<void>;
+  loadDiscoverRooms: () => Promise<void>;
+  joinRoom: (roomId: string) => Promise<void>;
 }
 
 const DashboardContext = createContext<DashboardContextValue | null>(null);
@@ -268,6 +285,38 @@ export default function DashboardApp() {
     }
   }, [state.token, state.selectedRoomId]);
 
+  const loadDiscoverRooms = useCallback(async () => {
+    if (!state.token) return;
+    dispatch({ type: "SET_DISCOVER_LOADING", loading: true });
+    try {
+      const result = await api.discoverRooms(state.token);
+      dispatch({ type: "SET_DISCOVER_ROOMS", rooms: result.rooms });
+    } catch (err: any) {
+      console.error("[Dashboard] Failed to load discover rooms:", err);
+      dispatch({ type: "SET_DISCOVER_LOADING", loading: false });
+    }
+  }, [state.token]);
+
+  const joinRoom = useCallback(async (roomId: string) => {
+    if (!state.token) return;
+    dispatch({ type: "SET_JOINING_ROOM", roomId });
+    try {
+      await api.joinRoom(state.token, roomId);
+      // Refresh overview to get updated room list, and reload discover list
+      const overview = await api.getOverview(state.token);
+      dispatch({ type: "SET_OVERVIEW", overview });
+      dispatch({ type: "SET_JOINING_ROOM", roomId: null });
+      // Remove the joined room from discover list
+      dispatch({
+        type: "SET_DISCOVER_ROOMS",
+        rooms: state.discoverRooms.filter((r) => r.room_id !== roomId),
+      });
+    } catch (err: any) {
+      console.error("[Dashboard] Failed to join room:", roomId, err);
+      dispatch({ type: "SET_JOINING_ROOM", roomId: null });
+    }
+  }, [state.token, state.discoverRooms]);
+
   const handleLogin = useCallback((token: string) => {
     localStorage.setItem("agentgram_token", token);
     dispatch({ type: "SET_TOKEN", token });
@@ -281,6 +330,8 @@ export default function DashboardApp() {
     selectAgent,
     searchAgents,
     refreshOverview,
+    loadDiscoverRooms,
+    joinRoom,
   };
 
   if (!state.token) {

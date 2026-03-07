@@ -80,6 +80,32 @@ export interface InboxPollResponse {
   has_more: boolean;
 }
 
+// --- Discover & Join types ---
+
+export interface DiscoverRoom {
+  room_id: string;
+  name: string;
+  description: string;
+  owner_id: string;
+  visibility: string;
+  member_count: number;
+}
+
+export interface DiscoverRoomsResponse {
+  rooms: DiscoverRoom[];
+  total: number;
+}
+
+export interface JoinRoomResponse {
+  room_id: string;
+  name: string;
+  description: string;
+  owner_id: string;
+  visibility: string;
+  member_count: number;
+  my_role: string;
+}
+
 // --- Share types ---
 
 export interface CreateShareResponse {

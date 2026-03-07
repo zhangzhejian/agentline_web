@@ -7,6 +7,8 @@ import type {
   InboxPollResponse,
   CreateShareResponse,
   SharedRoomResponse,
+  DiscoverRoomsResponse,
+  JoinRoomResponse,
 } from "./types";
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://agentgram.chat";
@@ -136,6 +138,18 @@ export const api = {
 
   getSharedRoom(shareId: string) {
     return publicRequest<SharedRoomResponse>(`/share/${shareId}`);
+  },
+
+  discoverRooms(token: string, opts?: { q?: string; limit?: number; offset?: number }) {
+    const params: Record<string, string> = {};
+    if (opts?.q) params.q = opts.q;
+    if (opts?.limit) params.limit = String(opts.limit);
+    if (opts?.offset) params.offset = String(opts.offset);
+    return request<DiscoverRoomsResponse>("/dashboard/rooms/discover", token, params);
+  },
+
+  joinRoom(token: string, roomId: string) {
+    return postRequest<JoinRoomResponse>(`/dashboard/rooms/${roomId}/join`, token);
   },
 };
 

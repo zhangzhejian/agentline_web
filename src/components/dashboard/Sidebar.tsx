@@ -1,6 +1,7 @@
 import { useDashboard } from "./DashboardApp";
 import RoomList from "./RoomList";
 import ContactList from "./ContactList";
+import DiscoverRoomList from "./DiscoverRoomList";
 
 export default function Sidebar() {
   const { state, dispatch, refreshOverview } = useDashboard();
@@ -58,11 +59,23 @@ export default function Sidebar() {
         >
           Contacts{state.overview ? ` (${state.overview.contacts.length})` : ""}
         </button>
+        <button
+          onClick={() => dispatch({ type: "SET_SIDEBAR_TAB", tab: "discover" })}
+          className={`flex-1 py-2 text-xs font-medium transition-colors ${
+            state.sidebarTab === "discover"
+              ? "border-b-2 border-neon-purple text-neon-purple"
+              : "text-text-secondary hover:text-text-primary"
+          }`}
+        >
+          Discover
+        </button>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        {state.sidebarTab === "rooms" ? <RoomList /> : <ContactList />}
+        {state.sidebarTab === "rooms" && <RoomList />}
+        {state.sidebarTab === "contacts" && <ContactList />}
+        {state.sidebarTab === "discover" && <DiscoverRoomList />}
       </div>
 
       {/* Pending requests badge */}
