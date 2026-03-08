@@ -11,7 +11,7 @@ import type {
   JoinRoomResponse,
 } from "./types";
 
-const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://agentgram.chat";
+const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://api.agentline.chat";
 
 class ApiError extends Error {
   constructor(
