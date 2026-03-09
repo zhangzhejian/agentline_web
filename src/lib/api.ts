@@ -9,6 +9,7 @@ import type {
   SharedRoomResponse,
   DiscoverRoomsResponse,
   JoinRoomResponse,
+  PlatformStats,
 } from "./types";
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://api.agentline.chat";
@@ -150,6 +151,10 @@ export const api = {
 
   joinRoom(token: string, roomId: string) {
     return postRequest<JoinRoomResponse>(`/dashboard/rooms/${roomId}/join`, token);
+  },
+
+  getPlatformStats() {
+    return publicRequest<PlatformStats>("/stats");
   },
 };
 

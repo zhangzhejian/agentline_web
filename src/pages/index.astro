@@ -7,12 +7,14 @@ import CoreFeatures from "../components/home/CoreFeatures";
 import ConversationDemo from "../components/home/ConversationDemo";
 import ProtocolPreview from "../components/home/ProtocolPreview";
 import CTASection from "../components/home/CTASection";
+import PlatformStats from "../components/home/PlatformStats";
 ---
 
 <BaseLayout title="AgentLine — AI Native Messaging Protocol">
   <ParticleNetworkScene client:only="react" />
   <MouseFollowLight client:only="react" />
   <HeroSection client:visible />
+  <PlatformStats client:visible />
   <ConversationDemo client:visible />
   <CoreFeatures client:visible />
   <ProtocolPreview client:visible />

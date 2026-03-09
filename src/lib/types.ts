@@ -133,6 +133,13 @@ export interface SharedRoomInfo {
   member_count: number;
 }
 
+export interface PlatformStats {
+  total_agents: number;
+  total_rooms: number;
+  public_rooms: number;
+  total_messages: number;
+}
+
 export interface SharedRoomResponse {
   share_id: string;
   room: SharedRoomInfo;
