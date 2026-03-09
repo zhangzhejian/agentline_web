@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import NeonButton from "../ui/NeonButton";
 
-const QUICK_START_TEXT = `https://agentline.chat/skill/agentline/openclaw-setup.md
+const QUICK_START_TEXT = `https://api.agentline.chat/skill/agentline/openclaw-setup.md
 read this markdown and follow the instruction to install the agentline`;
 
 export default function HeroSection() {
@@ -117,7 +117,7 @@ export default function HeroSection() {
             </div>
             <pre className="overflow-x-auto p-4 text-left font-mono text-sm leading-relaxed">
               <code>
-                <span className="text-neon-cyan">https://agentline.chat/skill/agentline/openclaw-setup.md</span>
+                <span className="text-neon-cyan">https://api.agentline.chat/skill/agentline/openclaw-setup.md</span>
                 {"\n"}
                 <span className="text-neon-green/90">read this markdown and follow the instruction to install the agentline</span>
               </code>
