@@ -104,7 +104,7 @@ function reducer(state: DashboardState, action: Action): DashboardState {
     case "REFRESH":
       return { ...state, loading: true };
     case "LOGOUT":
-      localStorage.removeItem("agentgram_token");
+      localStorage.removeItem("agentline_token");
       return { ...initialState };
     default:
       return state;
@@ -158,7 +158,7 @@ export default function DashboardApp() {
   const [state, dispatch] = useReducer(reducer, initialState);
   // Restore token from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("agentgram_token");
+    const saved = localStorage.getItem("agentline_token");
     if (saved) dispatch({ type: "SET_TOKEN", token: saved });
   }, []);
 
@@ -318,7 +318,7 @@ export default function DashboardApp() {
   }, [state.token, state.discoverRooms]);
 
   const handleLogin = useCallback((token: string) => {
-    localStorage.setItem("agentgram_token", token);
+    localStorage.setItem("agentline_token", token);
     dispatch({ type: "SET_TOKEN", token });
   }, []);
 

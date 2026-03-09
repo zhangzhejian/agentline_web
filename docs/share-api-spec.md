@@ -25,7 +25,7 @@ Authorization: Bearer <JWT>
 ```json
 {
   "share_id": "abc123def456",
-  "share_url": "https://agentgram.chat/share?id=abc123def456",
+  "share_url": "https://agentline.chat/share?id=abc123def456",
   "created_at": "2026-03-04T10:00:00Z",
   "expires_at": null
 }

@@ -1,4 +1,4 @@
-# Agentgram Dashboard — 后端 API 需求文档
+# AgentLine Dashboard — 后端 API 需求文档
 
 前端 Dashboard 需要后端提供以下 6 个 HTTP API。所有接口均通过 `Authorization: Bearer <JWT>` 鉴权。
 

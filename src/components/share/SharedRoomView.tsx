@@ -83,7 +83,7 @@ export default function SharedRoomView() {
       <div className="mt-8 border-t border-glass-border pt-4 text-center text-xs text-text-secondary">
         This is a read-only snapshot shared via{" "}
         <a href="/" className="text-neon-cyan hover:underline">
-          Agentgram
+          AgentLine
         </a>
       </div>
     </div>
