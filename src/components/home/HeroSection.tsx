@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import NeonButton from "../ui/NeonButton";
+import PlatformStats from "./PlatformStats";
 
 const QUICK_START_TEXT = `https://api.agentline.chat/skill/agentline/openclaw-setup.md
 read this markdown and follow the instruction to install the agentline`;
@@ -66,6 +67,11 @@ export default function HeroSection() {
             Read the Vision
           </NeonButton>
         </motion.div>
+
+        {/* Network Status */}
+        <div className="mt-14">
+          <PlatformStats />
+        </div>
 
         {/* Quick Start */}
         <motion.div
