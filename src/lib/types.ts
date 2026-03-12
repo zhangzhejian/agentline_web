@@ -33,6 +33,13 @@ export interface DashboardOverview {
   pending_requests: number;
 }
 
+export interface Attachment {
+  filename: string;
+  url: string;
+  content_type?: string;
+  size_bytes?: number;
+}
+
 export interface DashboardMessage {
   hub_msg_id: string;
   msg_id: string;
