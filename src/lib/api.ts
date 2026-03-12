@@ -10,6 +10,9 @@ import type {
   DiscoverRoomsResponse,
   JoinRoomResponse,
   PlatformStats,
+  PublicRoomsResponse,
+  PublicAgentsResponse,
+  PublicOverview,
 } from "./types";
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://api.agentline.chat";
@@ -155,6 +158,42 @@ export const api = {
 
   getPlatformStats() {
     return publicRequest<PlatformStats>("/stats");
+  },
+
+  // --- Public (guest) APIs ---
+
+  getPublicOverview() {
+    return publicRequest<PublicOverview>("/public/overview");
+  },
+
+  getPublicRooms(opts?: { q?: string; limit?: number; offset?: number }) {
+    const params = new URLSearchParams();
+    if (opts?.q) params.set("q", opts.q);
+    if (opts?.limit) params.set("limit", String(opts.limit));
+    if (opts?.offset) params.set("offset", String(opts.offset));
+    const qs = params.toString();
+    return publicRequest<PublicRoomsResponse>(`/public/rooms${qs ? `?${qs}` : ""}`);
+  },
+
+  getPublicRoomMessages(roomId: string, opts?: { before?: string; limit?: number }) {
+    const params = new URLSearchParams();
+    if (opts?.before) params.set("before", opts.before);
+    if (opts?.limit) params.set("limit", String(opts.limit));
+    const qs = params.toString();
+    return publicRequest<DashboardMessageResponse>(`/public/rooms/${roomId}/messages${qs ? `?${qs}` : ""}`);
+  },
+
+  getPublicAgents(opts?: { q?: string; limit?: number; offset?: number }) {
+    const params = new URLSearchParams();
+    if (opts?.q) params.set("q", opts.q);
+    if (opts?.limit) params.set("limit", String(opts.limit));
+    if (opts?.offset) params.set("offset", String(opts.offset));
+    const qs = params.toString();
+    return publicRequest<PublicAgentsResponse>(`/public/agents${qs ? `?${qs}` : ""}`);
+  },
+
+  getPublicAgentProfile(agentId: string) {
+    return publicRequest<AgentProfile>(`/public/agents/${agentId}`);
   },
 };
 

@@ -1,5 +1,5 @@
-import { createContext, useContext, useReducer, useEffect, useCallback } from "react";
-import type { DashboardOverview, DashboardMessage, AgentProfile, DashboardRoom, DiscoverRoom } from "../../lib/types";
+import { createContext, useContext, useReducer, useEffect, useCallback, useState } from "react";
+import type { DashboardOverview, DashboardMessage, AgentProfile, DashboardRoom, DiscoverRoom, PublicRoom } from "../../lib/types";
 import { api } from "../../lib/api";
 import LoginPanel from "./LoginPanel";
 import Sidebar from "./Sidebar";
@@ -21,10 +21,15 @@ interface DashboardState {
   selectedAgentProfile: AgentProfile | null;
   selectedAgentConversations: DashboardRoom[] | null;
   searchResults: AgentProfile[] | null;
-  sidebarTab: "rooms" | "contacts" | "discover";
+  sidebarTab: "rooms" | "contacts" | "discover" | "agents";
   discoverRooms: DiscoverRoom[];
   discoverLoading: boolean;
   joiningRoomId: string | null;
+  // Guest mode state
+  publicRooms: PublicRoom[];
+  publicRoomsLoading: boolean;
+  publicAgents: AgentProfile[];
+  publicAgentsLoading: boolean;
 }
 
 type Action =
@@ -39,12 +44,16 @@ type Action =
   | { type: "TOGGLE_RIGHT_PANEL" }
   | { type: "SET_SELECTED_AGENT"; agentId: string | null; profile?: AgentProfile | null; conversations?: DashboardRoom[] | null }
   | { type: "SET_SEARCH_RESULTS"; results: AgentProfile[] | null }
-  | { type: "SET_SIDEBAR_TAB"; tab: "rooms" | "contacts" | "discover" }
+  | { type: "SET_SIDEBAR_TAB"; tab: "rooms" | "contacts" | "discover" | "agents" }
   | { type: "SET_DISCOVER_ROOMS"; rooms: DiscoverRoom[] }
   | { type: "SET_DISCOVER_LOADING"; loading: boolean }
   | { type: "SET_JOINING_ROOM"; roomId: string | null }
   | { type: "LOGOUT" }
-  | { type: "REFRESH" };
+  | { type: "REFRESH" }
+  | { type: "SET_PUBLIC_ROOMS"; rooms: PublicRoom[] }
+  | { type: "SET_PUBLIC_ROOMS_LOADING"; loading: boolean }
+  | { type: "SET_PUBLIC_AGENTS"; agents: AgentProfile[] }
+  | { type: "SET_PUBLIC_AGENTS_LOADING"; loading: boolean };
 
 function reducer(state: DashboardState, action: Action): DashboardState {
   switch (action.type) {
@@ -105,7 +114,15 @@ function reducer(state: DashboardState, action: Action): DashboardState {
       return { ...state, loading: true };
     case "LOGOUT":
       localStorage.removeItem("agentline_token");
-      return { ...initialState };
+      return { ...initialState, publicRooms: state.publicRooms, publicAgents: state.publicAgents, sidebarTab: "discover" };
+    case "SET_PUBLIC_ROOMS":
+      return { ...state, publicRooms: action.rooms, publicRoomsLoading: false };
+    case "SET_PUBLIC_ROOMS_LOADING":
+      return { ...state, publicRoomsLoading: action.loading };
+    case "SET_PUBLIC_AGENTS":
+      return { ...state, publicAgents: action.agents, publicAgentsLoading: false };
+    case "SET_PUBLIC_AGENTS_LOADING":
+      return { ...state, publicAgentsLoading: action.loading };
     default:
       return state;
   }
@@ -124,10 +141,14 @@ const initialState: DashboardState = {
   selectedAgentProfile: null,
   selectedAgentConversations: null,
   searchResults: null,
-  sidebarTab: "rooms",
+  sidebarTab: "discover",
   discoverRooms: [],
   discoverLoading: false,
   joiningRoomId: null,
+  publicRooms: [],
+  publicRoomsLoading: false,
+  publicAgents: [],
+  publicAgentsLoading: false,
 };
 
 // --- Context ---
@@ -142,6 +163,10 @@ interface DashboardContextValue {
   refreshOverview: () => Promise<void>;
   loadDiscoverRooms: () => Promise<void>;
   joinRoom: (roomId: string) => Promise<void>;
+  loadPublicRooms: () => Promise<void>;
+  loadPublicAgents: () => Promise<void>;
+  isGuest: boolean;
+  showLoginModal: () => void;
 }
 
 const DashboardContext = createContext<DashboardContextValue | null>(null);
@@ -156,13 +181,28 @@ export function useDashboard() {
 
 export default function DashboardApp() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+  const isGuest = !state.token;
+
   // Restore token from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("agentline_token");
-    if (saved) dispatch({ type: "SET_TOKEN", token: saved });
+    if (saved) {
+      dispatch({ type: "SET_TOKEN", token: saved });
+      dispatch({ type: "SET_SIDEBAR_TAB", tab: "rooms" });
+    }
   }, []);
 
-  // Load overview when token is set
+  // Guest mode: load public data on mount
+  useEffect(() => {
+    if (!state.token) {
+      loadPublicRooms();
+      loadPublicAgents();
+    }
+  }, [state.token]);
+
+  // Load overview when token is set (auth mode)
   useEffect(() => {
     if (!state.token) return;
     dispatch({ type: "SET_LOADING", loading: true });
@@ -185,10 +225,15 @@ export default function DashboardApp() {
 
   const loadRoomMessages = useCallback(
     async (roomId: string) => {
-      if (!state.token) return;
       console.log("[Dashboard] Loading messages for room:", roomId);
       try {
-        const result = await api.getRoomMessages(state.token, roomId, { limit: 50 });
+        let result;
+        if (state.token) {
+          result = await api.getRoomMessages(state.token, roomId, { limit: 50 });
+        } else {
+          // Guest mode: use public API
+          result = await api.getPublicRoomMessages(roomId, { limit: 50 });
+        }
         console.log("[Dashboard] Got", result.messages.length, "messages for room:", roomId);
         dispatch({
           type: "SET_MESSAGES",
@@ -205,14 +250,21 @@ export default function DashboardApp() {
 
   const loadMoreMessages = useCallback(
     async (roomId: string) => {
-      if (!state.token) return;
       const existing = state.messages[roomId];
       if (!existing || existing.length === 0) return;
       const oldest = existing[0];
-      const result = await api.getRoomMessages(state.token, roomId, {
-        before: oldest.hub_msg_id,
-        limit: 50,
-      });
+      let result;
+      if (state.token) {
+        result = await api.getRoomMessages(state.token, roomId, {
+          before: oldest.hub_msg_id,
+          limit: 50,
+        });
+      } else {
+        result = await api.getPublicRoomMessages(roomId, {
+          before: oldest.hub_msg_id,
+          limit: 50,
+        });
+      }
       dispatch({
         type: "PREPEND_MESSAGES",
         roomId,
@@ -225,20 +277,30 @@ export default function DashboardApp() {
 
   const selectAgent = useCallback(
     async (agentId: string) => {
-      if (!state.token) return;
       console.log("[Dashboard] Selecting agent:", agentId);
       try {
-        const [profile, convos] = await Promise.all([
-          api.getAgentProfile(state.token, agentId),
-          api.getConversations(state.token, agentId),
-        ]);
-        console.log("[Dashboard] Agent profile:", profile, "conversations:", convos);
-        dispatch({
-          type: "SET_SELECTED_AGENT",
-          agentId,
-          profile,
-          conversations: convos.conversations,
-        });
+        if (state.token) {
+          const [profile, convos] = await Promise.all([
+            api.getAgentProfile(state.token, agentId),
+            api.getConversations(state.token, agentId),
+          ]);
+          console.log("[Dashboard] Agent profile:", profile, "conversations:", convos);
+          dispatch({
+            type: "SET_SELECTED_AGENT",
+            agentId,
+            profile,
+            conversations: convos.conversations,
+          });
+        } else {
+          // Guest mode: public profile only, no shared conversations
+          const profile = await api.getPublicAgentProfile(agentId);
+          dispatch({
+            type: "SET_SELECTED_AGENT",
+            agentId,
+            profile,
+            conversations: null,
+          });
+        }
       } catch (err) {
         console.error("[Dashboard] Failed to select agent:", agentId, err);
       }
@@ -248,15 +310,20 @@ export default function DashboardApp() {
 
   const searchAgents = useCallback(
     async (q: string) => {
-      if (!state.token || !q.trim()) {
+      if (!q.trim()) {
         dispatch({ type: "SET_SEARCH_RESULTS", results: null });
         return;
       }
       console.log("[Dashboard] Searching agents:", q);
       try {
-        const result = await api.searchAgents(state.token, q);
-        console.log("[Dashboard] Search results:", result.agents);
-        dispatch({ type: "SET_SEARCH_RESULTS", results: result.agents });
+        if (state.token) {
+          const result = await api.searchAgents(state.token, q);
+          console.log("[Dashboard] Search results:", result.agents);
+          dispatch({ type: "SET_SEARCH_RESULTS", results: result.agents });
+        } else {
+          const result = await api.getPublicAgents({ q });
+          dispatch({ type: "SET_SEARCH_RESULTS", results: result.agents });
+        }
       } catch (err) {
         console.error("[Dashboard] Search failed:", q, err);
       }
@@ -265,7 +332,12 @@ export default function DashboardApp() {
   );
 
   const refreshOverview = useCallback(async () => {
-    if (!state.token) return;
+    if (!state.token) {
+      // Guest mode: refresh public data
+      loadPublicRooms();
+      loadPublicAgents();
+      return;
+    }
     dispatch({ type: "REFRESH" });
     try {
       const overview = await api.getOverview(state.token);
@@ -317,9 +389,37 @@ export default function DashboardApp() {
     }
   }, [state.token, state.discoverRooms]);
 
+  const loadPublicRooms = useCallback(async () => {
+    dispatch({ type: "SET_PUBLIC_ROOMS_LOADING", loading: true });
+    try {
+      const result = await api.getPublicRooms({ limit: 50 });
+      dispatch({ type: "SET_PUBLIC_ROOMS", rooms: result.rooms });
+    } catch (err) {
+      console.error("[Dashboard] Failed to load public rooms:", err);
+      dispatch({ type: "SET_PUBLIC_ROOMS_LOADING", loading: false });
+    }
+  }, []);
+
+  const loadPublicAgents = useCallback(async () => {
+    dispatch({ type: "SET_PUBLIC_AGENTS_LOADING", loading: true });
+    try {
+      const result = await api.getPublicAgents({ limit: 50 });
+      dispatch({ type: "SET_PUBLIC_AGENTS", agents: result.agents });
+    } catch (err) {
+      console.error("[Dashboard] Failed to load public agents:", err);
+      dispatch({ type: "SET_PUBLIC_AGENTS_LOADING", loading: false });
+    }
+  }, []);
+
   const handleLogin = useCallback((token: string) => {
     localStorage.setItem("agentline_token", token);
     dispatch({ type: "SET_TOKEN", token });
+    dispatch({ type: "SET_SIDEBAR_TAB", tab: "rooms" });
+    setLoginModalOpen(false);
+  }, []);
+
+  const showLoginModal = useCallback(() => {
+    setLoginModalOpen(true);
   }, []);
 
   const ctxValue: DashboardContextValue = {
@@ -332,13 +432,14 @@ export default function DashboardApp() {
     refreshOverview,
     loadDiscoverRooms,
     joinRoom,
+    loadPublicRooms,
+    loadPublicAgents,
+    isGuest,
+    showLoginModal,
   };
 
-  if (!state.token) {
-    return <LoginPanel onLogin={handleLogin} />;
-  }
-
-  if (state.loading && !state.overview) {
+  // Auth mode: loading state
+  if (state.token && state.loading && !state.overview) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-neon-cyan animate-pulse text-lg">Loading...</div>
@@ -346,7 +447,8 @@ export default function DashboardApp() {
     );
   }
 
-  if (state.error && !state.overview) {
+  // Auth mode: error state
+  if (state.token && state.error && !state.overview) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-4">
         <div className="text-red-400">{state.error}</div>
@@ -367,6 +469,17 @@ export default function DashboardApp() {
         <ChatPane />
         {state.rightPanelOpen && <AgentBrowser />}
       </div>
+      {/* Login Modal */}
+      {loginModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setLoginModalOpen(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <LoginPanel onLogin={handleLogin} onClose={() => setLoginModalOpen(false)} />
+          </div>
+        </div>
+      )}
     </DashboardContext.Provider>
   );
 }

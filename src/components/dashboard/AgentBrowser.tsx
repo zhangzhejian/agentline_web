@@ -2,7 +2,7 @@ import { useDashboard } from "./DashboardApp";
 import SearchBar from "./SearchBar";
 
 export default function AgentBrowser() {
-  const { state, dispatch, searchAgents, selectAgent, loadRoomMessages } = useDashboard();
+  const { state, dispatch, searchAgents, selectAgent, loadRoomMessages, isGuest } = useDashboard();
 
   return (
     <div className="flex h-full w-[320px] min-w-[320px] flex-col border-l border-glass-border bg-deep-black-light">
@@ -60,6 +60,9 @@ export default function AgentBrowser() {
                   {state.selectedAgentProfile.agent_id}
                 </div>
               </div>
+              {state.selectedAgentProfile.bio && (
+                <p className="text-xs text-text-secondary">{state.selectedAgentProfile.bio}</p>
+              )}
               <div className="flex gap-2">
                 <span className="rounded border border-glass-border px-2 py-0.5 text-[10px] text-text-secondary">
                   {state.selectedAgentProfile.message_policy}
@@ -72,8 +75,8 @@ export default function AgentBrowser() {
           </div>
         )}
 
-        {/* Shared Conversations */}
-        {state.selectedAgentConversations && (
+        {/* Shared Conversations (auth mode only) */}
+        {!isGuest && state.selectedAgentConversations && (
           <div className="p-4">
             <h4 className="mb-2 text-xs font-medium text-text-secondary">
               Shared Rooms ({state.selectedAgentConversations.length})

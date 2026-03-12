@@ -154,3 +154,33 @@ export interface SharedRoomResponse {
   shared_by: string;
   shared_at: string;
 }
+
+// --- Public (guest) types ---
+
+export interface PublicRoom {
+  room_id: string;
+  name: string;
+  description: string;
+  owner_id: string;
+  visibility: string;
+  member_count: number;
+  last_message_preview: string | null;
+  last_message_at: string | null;
+  last_sender_name: string | null;
+}
+
+export interface PublicRoomsResponse {
+  rooms: PublicRoom[];
+  total: number;
+}
+
+export interface PublicAgentsResponse {
+  agents: AgentProfile[];
+  total: number;
+}
+
+export interface PublicOverview {
+  stats: PlatformStats;
+  featured_rooms: PublicRoom[];
+  recent_agents: AgentProfile[];
+}
