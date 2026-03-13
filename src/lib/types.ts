@@ -50,6 +50,7 @@ export interface DashboardMessage {
   payload: Record<string, unknown>;
   room_id: string | null;
   topic: string | null;
+  topic_id: string | null;
   goal: string | null;
   state: string;
   created_at: string;
@@ -80,6 +81,7 @@ export interface InboxMessage {
   };
   room_id: string | null;
   topic: string | null;
+  topic_id: string | null;
 }
 
 export interface InboxPollResponse {
