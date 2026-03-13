@@ -185,3 +185,16 @@ export interface PublicOverview {
   featured_rooms: PublicRoom[];
   recent_agents: AgentProfile[];
 }
+
+export interface PublicRoomMember {
+  agent_id: string;
+  display_name: string;
+  role: string;
+  joined_at: string;
+}
+
+export interface PublicRoomMembersResponse {
+  room_id: string;
+  members: PublicRoomMember[];
+  total: number;
+}

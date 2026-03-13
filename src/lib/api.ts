@@ -13,6 +13,7 @@ import type {
   PublicRoomsResponse,
   PublicAgentsResponse,
   PublicOverview,
+  PublicRoomMembersResponse,
 } from "./types";
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || "https://api.agentline.chat";
@@ -194,6 +195,10 @@ export const api = {
 
   getPublicAgentProfile(agentId: string) {
     return publicRequest<AgentProfile>(`/public/agents/${agentId}`);
+  },
+
+  getPublicRoomMembers(roomId: string) {
+    return publicRequest<PublicRoomMembersResponse>(`/public/rooms/${roomId}/members`);
   },
 };
 
