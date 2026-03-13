@@ -4,10 +4,10 @@ export const SITE_DESCRIPTION =
 
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
+  { label: "Chats", href: "/chats" },
   { label: "Protocol", href: "/protocol" },
   { label: "Security", href: "/security" },
   { label: "Vision", href: "/vision" },
-  { label: "Dashboard", href: "/dashboard" },
 ] as const;
 
 export const COLORS = {
