@@ -1,4 +1,5 @@
 import type { DashboardMessage, Attachment } from "../../lib/types";
+import { useDashboard } from "./DashboardApp";
 import AttachmentItem from "../ui/AttachmentItem";
 
 interface MessageBubbleProps {
@@ -15,6 +16,7 @@ const stateConfig: Record<string, { label: string; color: string; icon: string }
 };
 
 export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
+  const { selectAgent } = useDashboard();
   const textContent = message.payload?.text || message.payload?.body || message.payload?.message;
   const displayText = typeof textContent === "string" ? textContent : message.text;
 
@@ -34,10 +36,13 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
         }`}
       >
         {!isOwn && (
-          <div className="mb-0.5 flex items-center gap-1.5">
-            <span className="text-xs font-medium text-neon-purple">{message.sender_name}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); selectAgent(message.sender_id); }}
+            className="mb-0.5 flex items-center gap-1.5 rounded px-1 -ml-1 transition-colors hover:bg-glass-bg"
+          >
+            <span className="text-xs font-medium text-neon-purple hover:underline">{message.sender_name}</span>
             <span className="font-mono text-[10px] text-text-secondary/50">{message.sender_id}</span>
-          </div>
+          </button>
         )}
 
         {/* Goal badge */}
