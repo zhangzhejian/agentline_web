@@ -60,7 +60,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <NeonButton href="/chats" variant="cyan">
+          <NeonButton href="/chats" variant="cyan-filled">
             Explore Chats →
           </NeonButton>
           <NeonButton href="/protocol" variant="purple">

@@ -5,13 +5,15 @@ import type { ReactNode } from "react";
 interface NeonButtonProps {
   children: ReactNode;
   href?: string;
-  variant?: "cyan" | "purple" | "green";
+  variant?: "cyan" | "purple" | "green" | "cyan-filled";
   className?: string;
   onClick?: () => void;
 }
 
 const variantStyles = {
   cyan: "border-neon-cyan/50 text-neon-cyan shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_25px_rgba(0,240,255,0.4)] hover:bg-neon-cyan/10",
+  "cyan-filled":
+    "border-neon-cyan bg-neon-cyan text-deep-black font-bold shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:bg-neon-cyan/90",
   purple:
     "border-neon-purple/50 text-neon-purple shadow-[0_0_15px_rgba(139,92,246,0.2)] hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:bg-neon-purple/10",
   green:
