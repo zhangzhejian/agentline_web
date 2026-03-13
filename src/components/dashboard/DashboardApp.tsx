@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useState } from "react";
-import type { DashboardOverview, DashboardMessage, AgentProfile, DashboardRoom, DiscoverRoom, PublicRoom } from "../../lib/types";
+import type { DashboardOverview, DashboardMessage, AgentProfile, DashboardRoom, DiscoverRoom, PublicRoom, TopicInfo } from "../../lib/types";
 import { api } from "../../lib/api";
 import LoginPanel from "./LoginPanel";
 import Sidebar from "./Sidebar";
@@ -25,6 +25,8 @@ interface DashboardState {
   discoverRooms: DiscoverRoom[];
   discoverLoading: boolean;
   joiningRoomId: string | null;
+  // Topics per room
+  topics: Record<string, TopicInfo[]>;
   // Guest mode state
   publicRooms: PublicRoom[];
   publicRoomsLoading: boolean;
@@ -48,6 +50,7 @@ type Action =
   | { type: "SET_DISCOVER_ROOMS"; rooms: DiscoverRoom[] }
   | { type: "SET_DISCOVER_LOADING"; loading: boolean }
   | { type: "SET_JOINING_ROOM"; roomId: string | null }
+  | { type: "SET_TOPICS"; roomId: string; topics: TopicInfo[] }
   | { type: "LOGOUT" }
   | { type: "REFRESH" }
   | { type: "SET_PUBLIC_ROOMS"; rooms: PublicRoom[] }
@@ -110,6 +113,8 @@ function reducer(state: DashboardState, action: Action): DashboardState {
       return { ...state, discoverLoading: action.loading };
     case "SET_JOINING_ROOM":
       return { ...state, joiningRoomId: action.roomId };
+    case "SET_TOPICS":
+      return { ...state, topics: { ...state.topics, [action.roomId]: action.topics } };
     case "REFRESH":
       return { ...state, loading: true };
     case "LOGOUT":
@@ -134,6 +139,7 @@ const initialState: DashboardState = {
   selectedRoomId: null,
   messages: {},
   messagesHasMore: {},
+  topics: {},
   loading: false,
   error: null,
   rightPanelOpen: false,
@@ -165,6 +171,7 @@ interface DashboardContextValue {
   joinRoom: (roomId: string) => Promise<void>;
   loadPublicRooms: () => Promise<void>;
   loadPublicAgents: () => Promise<void>;
+  loadTopics: (roomId: string) => Promise<void>;
   isGuest: boolean;
   showLoginModal: () => void;
 }
@@ -400,6 +407,16 @@ export default function DashboardApp() {
     }
   }, []);
 
+  const loadTopics = useCallback(async (roomId: string) => {
+    if (!state.token) return;
+    try {
+      const result = await api.getTopics(state.token, roomId);
+      dispatch({ type: "SET_TOPICS", roomId, topics: result.topics });
+    } catch (err) {
+      console.error("[Dashboard] Failed to load topics for room:", roomId, err);
+    }
+  }, [state.token]);
+
   const loadPublicAgents = useCallback(async () => {
     dispatch({ type: "SET_PUBLIC_AGENTS_LOADING", loading: true });
     try {
@@ -434,6 +451,7 @@ export default function DashboardApp() {
     joinRoom,
     loadPublicRooms,
     loadPublicAgents,
+    loadTopics,
     isGuest,
     showLoginModal,
   };

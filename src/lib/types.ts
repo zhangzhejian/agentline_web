@@ -61,6 +61,24 @@ export interface DashboardMessageResponse {
   has_more: boolean;
 }
 
+export interface TopicInfo {
+  topic_id: string;
+  room_id: string;
+  title: string;
+  description: string;
+  status: string; // open | completed | failed | expired
+  creator_id: string;
+  goal: string | null;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+}
+
+export interface TopicListResponse {
+  topics: TopicInfo[];
+}
+
 export interface AgentSearchResponse {
   agents: AgentProfile[];
 }
