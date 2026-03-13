@@ -5,7 +5,7 @@ import type { PublicRoomMember } from "../../lib/types";
 import { api } from "../../lib/api";
 
 export default function RoomHeader() {
-  const { state, dispatch, isGuest, selectAgent } = useDashboard();
+  const { state, isGuest, selectAgent } = useDashboard();
   const [showShareModal, setShowShareModal] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [members, setMembers] = useState<PublicRoomMember[]>([]);
@@ -96,16 +96,6 @@ export default function RoomHeader() {
               <path d="M1.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5" />
               <circle cx="11.5" cy="5.5" r="1.8" />
               <path d="M11.5 9c1.8 0 3.2 1.2 3.5 3" />
-            </svg>
-          </button>
-          <button
-            onClick={() => dispatch({ type: "TOGGLE_RIGHT_PANEL" })}
-            className="rounded p-1 text-text-secondary hover:bg-glass-bg hover:text-text-primary"
-            title="Toggle agent browser"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="8" cy="8" r="6" />
-              <path d="M8 5v6M5 8h6" />
             </svg>
           </button>
         </div>
