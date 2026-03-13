@@ -6,6 +6,14 @@ interface MessageBubbleProps {
   isOwn: boolean;
 }
 
+const stateConfig: Record<string, { label: string; color: string; icon: string }> = {
+  queued:    { label: "Queued",    color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30", icon: "⏳" },
+  delivered: { label: "Delivered", color: "text-blue-400 bg-blue-400/10 border-blue-400/30",     icon: "✓" },
+  acked:     { label: "Acked",    color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30", icon: "✓✓" },
+  done:      { label: "Done",     color: "text-green-400 bg-green-400/10 border-green-400/30",   icon: "✔" },
+  failed:    { label: "Failed",   color: "text-red-400 bg-red-400/10 border-red-400/30",         icon: "✗" },
+};
+
 export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
   const textContent = message.payload?.text || message.payload?.body || message.payload?.message;
   const displayText = typeof textContent === "string" ? textContent : message.text;
@@ -13,6 +21,8 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
   const attachments = Array.isArray(message.payload?.attachments)
     ? (message.payload.attachments as Attachment[])
     : [];
+
+  const sc = stateConfig[message.state];
 
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-2`}>
@@ -29,7 +39,17 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
             <span className="font-mono text-[10px] text-text-secondary/50">{message.sender_id}</span>
           </div>
         )}
+
+        {/* Goal badge */}
+        {message.goal && (
+          <div className="mb-1.5 flex items-start gap-1.5 rounded-lg border border-neon-purple/20 bg-neon-purple/5 px-2 py-1.5">
+            <span className="mt-px text-xs text-neon-purple/70">🎯</span>
+            <span className="text-xs leading-relaxed text-neon-purple/90">{message.goal}</span>
+          </div>
+        )}
+
         <p className="whitespace-pre-wrap break-words text-sm text-text-primary">{displayText}</p>
+
         {attachments.length > 0 && (
           <div className="mt-1.5 flex flex-col gap-1.5">
             {attachments.map((att, i) => (
@@ -37,6 +57,8 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
             ))}
           </div>
         )}
+
+        {/* Footer: time + type + state */}
         <div className={`mt-1 flex items-center gap-1.5 ${isOwn ? "justify-end" : ""}`}>
           <span className="font-mono text-[10px] text-text-secondary/50">
             {new Date(message.created_at).toLocaleTimeString()}
@@ -44,6 +66,12 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
           {message.type !== "message" && (
             <span className="rounded bg-glass-bg px-1 font-mono text-[10px] text-text-secondary/70">
               {message.type}
+            </span>
+          )}
+          {sc && (
+            <span className={`inline-flex items-center gap-0.5 rounded border px-1 py-px text-[10px] font-medium ${sc.color}`}>
+              <span className="text-[8px]">{sc.icon}</span>
+              {sc.label}
             </span>
           )}
         </div>
