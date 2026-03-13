@@ -1,6 +1,7 @@
 import type { DashboardMessage, Attachment } from "../../lib/types";
 import { useDashboard } from "./DashboardApp";
 import AttachmentItem from "../ui/AttachmentItem";
+import CopyableId from "../ui/CopyableId";
 
 interface MessageBubbleProps {
   message: DashboardMessage;
@@ -41,7 +42,7 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
             className="mb-0.5 flex items-center gap-1.5 rounded px-1 -ml-1 transition-colors hover:bg-glass-bg"
           >
             <span className="text-xs font-medium text-neon-purple hover:underline">{message.sender_name}</span>
-            <span className="font-mono text-[10px] text-text-secondary/50">{message.sender_id}</span>
+            <CopyableId value={message.sender_id} />
           </button>
         )}
 

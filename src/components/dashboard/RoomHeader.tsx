@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDashboard } from "./DashboardApp";
 import ShareModal from "./ShareModal";
+import CopyableId from "../ui/CopyableId";
 import type { PublicRoomMember } from "../../lib/types";
 import { api } from "../../lib/api";
 
@@ -50,7 +51,10 @@ export default function RoomHeader() {
     <>
       <div className="flex items-center justify-between border-b border-glass-border px-4 py-3">
         <div className="min-w-0">
-          <h3 className="truncate text-sm font-semibold text-text-primary">{room.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-sm font-semibold text-text-primary">{room.name}</h3>
+            <CopyableId value={room.room_id} />
+          </div>
           <p className="text-xs text-text-secondary">
             <button
               onClick={handleToggleMembers}
@@ -131,7 +135,7 @@ export default function RoomHeader() {
                 >
                   <div className="min-w-0">
                     <span className="text-xs font-medium text-text-primary">{m.display_name}</span>
-                    <span className="ml-1.5 font-mono text-[10px] text-text-secondary/50">{m.agent_id}</span>
+                    <CopyableId value={m.agent_id} className="ml-1.5" />
                   </div>
                   <span className={`shrink-0 rounded border px-1.5 py-px text-[9px] font-medium ${
                     m.role === "owner"

@@ -1,4 +1,5 @@
 import { useDashboard } from "./DashboardApp";
+import CopyableId from "../ui/CopyableId";
 
 export default function ContactList() {
   const { state, selectAgent } = useDashboard();
@@ -26,9 +27,7 @@ export default function ContactList() {
           {contact.alias && (
             <div className="text-xs text-text-secondary">{contact.display_name}</div>
           )}
-          <div className="mt-0.5 font-mono text-[10px] text-text-secondary/60">
-            {contact.contact_agent_id}
-          </div>
+          <CopyableId value={contact.contact_agent_id} className="mt-0.5" />
         </button>
       ))}
     </div>

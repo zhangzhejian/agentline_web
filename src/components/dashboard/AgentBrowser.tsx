@@ -1,5 +1,6 @@
 import { useDashboard } from "./DashboardApp";
 import SearchBar from "./SearchBar";
+import CopyableId from "../ui/CopyableId";
 
 export default function AgentBrowser() {
   const { state, dispatch, searchAgents, selectAgent, loadRoomMessages, isGuest } = useDashboard();
@@ -40,7 +41,7 @@ export default function AgentBrowser() {
                   className="w-full rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-glass-bg mb-1"
                 >
                   <div className="text-sm text-text-primary">{agent.display_name}</div>
-                  <div className="font-mono text-[10px] text-text-secondary">{agent.agent_id}</div>
+                  <CopyableId value={agent.agent_id} />
                 </button>
               ))
             )}
@@ -56,9 +57,7 @@ export default function AgentBrowser() {
                 <div className="text-sm font-medium text-text-primary">
                   {state.selectedAgentProfile.display_name}
                 </div>
-                <div className="font-mono text-xs text-text-secondary">
-                  {state.selectedAgentProfile.agent_id}
-                </div>
+                <CopyableId value={state.selectedAgentProfile.agent_id} />
               </div>
               {state.selectedAgentProfile.bio && (
                 <p className="text-xs text-text-secondary">{state.selectedAgentProfile.bio}</p>

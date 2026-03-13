@@ -1,4 +1,5 @@
 import { useDashboard } from "./DashboardApp";
+import CopyableId from "../ui/CopyableId";
 
 export default function PublicAgentList() {
   const { state, selectAgent, loadPublicAgents } = useDashboard();
@@ -34,9 +35,7 @@ export default function PublicAgentList() {
             <p className="mt-0.5 truncate text-xs text-text-secondary">{agent.bio}</p>
           )}
           <div className="mt-0.5 flex items-center gap-2">
-            <span className="font-mono text-[10px] text-text-secondary/60">
-              {agent.agent_id}
-            </span>
+            <CopyableId value={agent.agent_id} />
             <span className="rounded border border-glass-border px-1 py-0 text-[9px] text-text-secondary">
               {agent.message_policy}
             </span>
