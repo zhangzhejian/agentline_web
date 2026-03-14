@@ -53,6 +53,7 @@ export interface DashboardMessage {
   topic_id: string | null;
   goal: string | null;
   state: string;
+  state_counts: Record<string, number> | null;
   created_at: string;
 }
 

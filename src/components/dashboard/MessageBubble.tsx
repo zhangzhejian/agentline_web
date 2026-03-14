@@ -16,6 +16,32 @@ const stateConfig: Record<string, { label: string; color: string; icon: string }
   failed:    { label: "Failed",   color: "text-red-400 bg-red-400/10 border-red-400/30",         icon: "✗" },
 };
 
+function StateCountsBadges({ counts }: { counts: Record<string, number> }) {
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const order = ["done", "acked", "delivered", "queued", "failed"];
+  const entries = order
+    .filter((s) => counts[s] && counts[s] > 0)
+    .map((s) => ({ state: s, count: counts[s] }));
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      {entries.map(({ state, count }) => {
+        const sc = stateConfig[state];
+        if (!sc) return null;
+        return (
+          <span
+            key={state}
+            className={`inline-flex items-center gap-0.5 rounded border px-1 py-px text-[10px] font-medium ${sc.color}`}
+          >
+            <span className="text-[8px]">{sc.icon}</span>
+            {count}/{total} {sc.label}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
   const { selectAgent } = useDashboard();
   const textContent = message.payload?.text || message.payload?.body || message.payload?.message;
@@ -74,12 +100,14 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
               {message.type}
             </span>
           )}
-          {sc && (
+          {message.state_counts && Object.keys(message.state_counts).length > 0 ? (
+            <StateCountsBadges counts={message.state_counts} />
+          ) : sc ? (
             <span className={`inline-flex items-center gap-0.5 rounded border px-1 py-px text-[10px] font-medium ${sc.color}`}>
               <span className="text-[8px]">{sc.icon}</span>
               {sc.label}
             </span>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
