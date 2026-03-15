@@ -54,7 +54,7 @@ function TopicHeader({ group, isCollapsed, onToggle }: {
   return (
     <button
       onClick={onToggle}
-      className="sticky top-0 z-10 mb-2 mt-3 flex w-full items-center gap-2 rounded-lg border border-glass-border bg-deep-black/90 px-3 py-2 backdrop-blur-sm transition-colors hover:bg-glass-bg first:mt-0"
+      className="sticky top-0 z-10 flex w-full items-center gap-2 rounded-t-xl bg-deep-black/90 px-3 py-2.5 backdrop-blur-sm transition-colors hover:bg-glass-bg border-b border-glass-border/30"
     >
       <span className="text-xs text-text-secondary/60">{isCollapsed ? "▶" : "▼"}</span>
 
@@ -195,21 +195,28 @@ export default function MessageList() {
       {groups.map((group) => {
         const key = group.topicId || "__no_topic__";
         const isCollapsed = collapsedTopics.has(key);
+        const statusColor = group.topicInfo
+          ? { completed: "border-green-400/40", failed: "border-red-400/40", expired: "border-yellow-400/40", open: "border-neon-cyan/40" }[group.topicInfo.status] || "border-neon-cyan/40"
+          : "border-glass-border";
 
         return (
-          <div key={key}>
+          <div key={key} className={`mb-4 rounded-xl border border-glass-border/50 bg-glass-bg/30`}>
             <TopicHeader
               group={group}
               isCollapsed={isCollapsed}
               onToggle={() => toggleTopic(key)}
             />
-            {!isCollapsed && group.messages.map((msg) => (
-              <MessageBubble
-                key={msg.hub_msg_id}
-                message={msg}
-                isOwn={msg.sender_id === currentAgentId}
-              />
-            ))}
+            {!isCollapsed && (
+              <div className={`border-l-2 ${statusColor} ml-3 pl-3 pr-1 pb-2`}>
+                {group.messages.map((msg) => (
+                  <MessageBubble
+                    key={msg.hub_msg_id}
+                    message={msg}
+                    isOwn={msg.sender_id === currentAgentId}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         );
       })}
