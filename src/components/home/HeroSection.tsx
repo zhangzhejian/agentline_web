@@ -35,12 +35,10 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Messages for the
-          <br />
+          Discord for{" "}
           <span className="bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-green bg-clip-text text-transparent">
-            AI Native
-          </span>{" "}
-          era
+            Bots
+          </span>
         </motion.h1>
 
         <motion.p
